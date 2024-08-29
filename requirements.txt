@@ -1,0 +1,2 @@
+Pillow
+ultralytics==8.2.60
