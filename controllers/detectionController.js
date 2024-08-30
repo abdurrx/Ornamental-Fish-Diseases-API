@@ -54,72 +54,61 @@ const create = async (req, res) => {
     // Path to the Python Interpreter
     const venvPythonPath = path.join(__dirname, '../venv/bin/python3');
 
-    if (fs.existsSync(venvPythonPath)) {
-      console.log(`Python interpreter found at: ${venvPythonPath}`);
+    // Define other paths
+    const scriptPath = path.join(__dirname, '../scripts/process_image.py')
+    const tempFilePath = path.join(__dirname, '../tmp', fileName)
+    const outputFilePath = path.join(__dirname, '../tmp/output', fileName)
 
-      // Define other paths
-      const scriptPath = path.join(__dirname, '../scripts/process_image.py')
-      const tempFilePath = path.join(__dirname, '../tmp', fileName)
-      const outputFilePath = path.join(__dirname, '../tmp/output', fileName)
+    fs.writeFileSync(tempFilePath, image.buffer)
 
-      fs.writeFileSync(tempFilePath, image.buffer)
-
-      // Execute the Python script
-      exec(`${venvPythonPath} ${scriptPath} ${tempFilePath} ${model_name} ${outputFilePath}`,
-        async (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Error processing image: ${stderr}`)
-            console.error(`Script Output: ${stdout}`);
-            return res.status(400).json({
-              error: true,
-              message: 'Failed to process image!'
-            })
-          }
-
-          // Read the processed image
-          const processedImageBuffer = fs.readFileSync(outputFilePath)
-
-          const folderName = 'detections'
-          const filePath = `${folderName}/${fileName}`
-          const file = bucket.file(filePath)
-
-          try {
-            await file.save(processedImageBuffer, {
-              metadata: { contentType: image.mimetype },
-            })
-
-            await file.makePublic()
-            const imageUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`
-
-            const detection = new Detection(id, imageUrl, model_name, userId, createdAt)
-            await Detection.saveDetection(detection)
-
-            // Cleanup and Delete the temporary files
-            fs.unlinkSync(tempFilePath)
-            fs.unlinkSync(outputFilePath)
-
-            return res.status(201).json({
-              error: false,
-              message: 'Successfully create detection!',
-              createResult: detection,
-            })
-
-          } catch (error) {
-            return res.status(400).json({
-              error: true,
-              message: 'Failed to create detection!'
-            })
-          }
+    // Execute the Python script
+    exec(`${venvPythonPath} ${scriptPath} ${tempFilePath} ${model_name} ${outputFilePath}`,
+      async (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error processing image: ${stderr}`)
+          console.error(`Script Output: ${stdout}`);
+          return res.status(400).json({
+            error: true,
+            message: 'Failed to process image!'
+          })
         }
-      )
 
-    } else {
-      console.error(`Python interpreter not found at: ${venvPythonPath}`);
-      return res.status(500).json({
-        error: true,
-        message: 'Python interpreter not found in the virtual environment.',
-      });
-    }
+        // Read the processed image
+        const processedImageBuffer = fs.readFileSync(outputFilePath)
+
+        const folderName = 'detections'
+        const filePath = `${folderName}/${fileName}`
+        const file = bucket.file(filePath)
+
+        try {
+          await file.save(processedImageBuffer, {
+            metadata: { contentType: image.mimetype },
+          })
+
+          await file.makePublic()
+          const imageUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`
+
+          const detection = new Detection(id, imageUrl, model_name, userId, createdAt)
+          await Detection.saveDetection(detection)
+
+          // Cleanup and Delete the temporary files
+          fs.unlinkSync(tempFilePath)
+          fs.unlinkSync(outputFilePath)
+
+          return res.status(201).json({
+            error: false,
+            message: 'Successfully create detection!',
+            detectionResult: detection,
+          })
+
+        } catch (error) {
+          return res.status(400).json({
+            error: true,
+            message: 'Failed to create detection!'
+          })
+        }
+      }
+    )
   })
 }
 
