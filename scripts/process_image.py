@@ -23,6 +23,7 @@ def process_image(image_path, model_name):
 
     # Open the image
     img = Image.open(image_path).convert('RGB')
+    img_width, img_height = img.size
 
     # Predict using the model
     results = model.predict(img, conf=0.8, iou=0.6)
@@ -32,8 +33,12 @@ def process_image(image_path, model_name):
     draw = ImageDraw.Draw(img)
 
     # Load a truetype font with the desired size
+    base_font_size = 20
+    scale_factor = min(img_width, img_height) / 640
+    font_size = max(base_font_size, int(base_font_size * scale_factor))
+
     font_path = os.path.join(base_dir, "fonts", "poppins_medium.ttf")
-    font = ImageFont.truetype(font_path, 20)
+    font = ImageFont.truetype(font_path, font_size)
 
     # Define colors for each class
     class_colors = {

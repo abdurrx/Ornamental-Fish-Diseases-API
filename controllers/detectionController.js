@@ -20,7 +20,7 @@ const create = async (req, res) => {
     if (err) {
       return res.status(400).json({
         error: true,
-        message: 'Failed to upload image!'
+        message: 'Failed to upload image: ' + err.message
       })
     }
 
