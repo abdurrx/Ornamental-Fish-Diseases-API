@@ -1,8 +1,10 @@
-const { bucket } = require("../config/firebaseConfig")
+const path = require('path')
 
-const Article = require("../models/articleModel")
+const { bucket } = require(path.join(__dirname, '../config/firebaseConfig'))
+const Article = require(path.join(__dirname, '../models/articleModel'))
+
 const validator = require('validator')
-const { v4: uuidv4 } = require("uuid")
+const { v4: uuidv4 } = require('uuid')
 
 const multer = require('multer')
 const storage = multer({
@@ -15,14 +17,14 @@ const getAll = async (req, res) => {
     const article = await Article.findAll()
     return res.status(200).json({
       error: false,
-      message: "Successfully get articles!",
+      message: 'Successfully get articles!',
       articleResults: article
     })
 
   } catch (error) {
     return res.status(404).json({
       error: true,
-      message: "Article not found!"
+      message: 'Article not found!'
     })
   }
 }
@@ -35,13 +37,13 @@ const getById = async (req, res) => {
     if (!article) {
       return res.status(404).json({
         error: true,
-        message: "Article not found!"
+        message: 'Article not found!'
       })
 
     } else {
       return res.status(200).json({
         error: false,
-        message: "Successfully get article!",
+        message: 'Successfully get article!',
         articleResult: article
       })
     }
@@ -49,7 +51,7 @@ const getById = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to get article!"
+      message: 'Failed to get article!'
     })
   }
 }
@@ -59,7 +61,7 @@ const create = async (req, res) => {
     if (err) {
       return res.status(400).json({
         error: true,
-        message: "Failed to upload image!"
+        message: 'Failed to upload image!'
       })
     }
 
@@ -70,32 +72,32 @@ const create = async (req, res) => {
     if (validator.isEmpty(title)) {
       return res.status(400).json({
         error: true,
-        message: "Title is required!"
+        message: 'Title is required!'
       })
     } else if (validator.isEmpty(content)) {
       return res.status(400).json({
         error: true,
-        message: "Content is required!"
+        message: 'Content is required!'
       })
     } else if (validator.isEmpty(author)) {
       return res.status(400).json({
         error: true,
-        message: "Author is required!"
+        message: 'Author is required!'
       })
     } else if (validator.isEmpty(date) || !validator.isDate(date)) {
       return res.status(400).json({
         error: true,
-        message: "Valid date is required!"
+        message: 'Valid date is required!'
       })
     } else if (!image) {
       return res.status(400).json({
         error: true,
-        message: "Image is required!"
+        message: 'Image is required!'
       })
     } else if (image.size > 1e6) {
       return res.status(413).json({
         error: true,
-        message: "Image size must not exceed 1 MB!"
+        message: 'Image size must not exceed 1 MB!'
       })
     }
 
@@ -118,14 +120,14 @@ const create = async (req, res) => {
 
       return res.status(201).json({
         error: false,
-        message: "Successfully create article!",
+        message: 'Successfully create article!',
         createResult: article
       })
 
     } catch (error) {
       return res.status(400).json({
         error: true,
-        message: "Failed to create article!"
+        message: 'Failed to create article!'
       })
     }
   })
@@ -136,7 +138,7 @@ const update = async (req, res) => {
     if (err) {
       return res.status(400).json({
         error: true,
-        message: "Failed to upload image!"
+        message: 'Failed to upload image!'
       })
     }
 
@@ -147,32 +149,32 @@ const update = async (req, res) => {
     if (validator.isEmpty(title)) {
       return res.status(400).json({
         error: true,
-        message: "Title is required!"
+        message: 'Title is required!'
       })
     } else if (validator.isEmpty(content)) {
       return res.status(400).json({
         error: true,
-        message: "Content is required!"
+        message: 'Content is required!'
       })
     } else if (validator.isEmpty(author)) {
       return res.status(400).json({
         error: true,
-        message: "Author is required!"
+        message: 'Author is required!'
       })
     } else if (validator.isEmpty(date) || !validator.isDate(date)) {
       return res.status(400).json({
         error: true,
-        message: "Valid date is required!"
+        message: 'Valid date is required!'
       })
     } else if (!image) {
       return res.status(400).json({
         error: true,
-        message: "Image is required!"
+        message: 'Image is required!'
       })
     } else if (image.size > 1e6) {
       return res.status(413).json({
         error: true,
-        message: "Image size must not exceed 1 MB!"
+        message: 'Image size must not exceed 1 MB!'
       })
     }
 
@@ -187,7 +189,7 @@ const update = async (req, res) => {
       if (!exist) {
         return res.status(404).json({
           error: true,
-          message: "Article not found!"
+          message: 'Article not found!'
         })
 
       } else {
@@ -208,7 +210,7 @@ const update = async (req, res) => {
 
         return res.status(200).json({
           error: false,
-          message: "Successfully update article!",
+          message: 'Successfully update article!',
           updateResult: article
         })
       }
@@ -216,7 +218,7 @@ const update = async (req, res) => {
     } catch (error) {
       return res.status(400).json({
         error: true,
-        message: "Failed to update article!"
+        message: 'Failed to update article!'
       })
     }
   })
@@ -230,7 +232,7 @@ const deleteById = async (req, res) => {
     if (!exist) {
       return res.status(404).json({
         error: true,
-        message: "Article not found!"
+        message: 'Article not found!'
       })
 
     } else {
@@ -242,14 +244,14 @@ const deleteById = async (req, res) => {
 
       return res.status(200).json({
         error: false,
-        message: "Successfully delete article!"
+        message: 'Successfully delete article!'
       })
     }
 
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to delete article!"
+      message: 'Failed to delete article!'
     })
   }
 }
@@ -263,12 +265,12 @@ const search = async (req, res) => {
     if (!article) {
       return res.status(404).json({
         error: true,
-        message: "Article not found!"
+        message: 'Article not found!'
       })
     } else {
       return res.status(200).json({
         error: false,
-        message: "Successfully get article!",
+        message: 'Successfully get article!',
         articleResults: article
       })
     }
@@ -276,7 +278,7 @@ const search = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to get article!"
+      message: 'Failed to get article!'
     })
   }
 }

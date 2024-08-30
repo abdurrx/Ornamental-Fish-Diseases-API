@@ -3,6 +3,7 @@ FROM node:20-slim
 
 # Install Python and other dependencies
 RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
+RUN apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0
 
 # Set the working directory
 WORKDIR /usr/src/app

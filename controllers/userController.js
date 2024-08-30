@@ -1,16 +1,18 @@
-const { sendVerifyEmail, sendResetPasswordEmail } = require('../services/emailService')
-const { admin } = require("../config/firebaseConfig")
+const path = require('path')
 
-const User = require("../models/userModel")
-const Code = require("../models/codeModel")
+const { sendVerifyEmail, sendResetPasswordEmail } = require(path.join(__dirname, '../services/emailService'))
+const { admin } = require(path.join(__dirname, '../config/firebaseConfig'))
+
+const User = require(path.join(__dirname, '../models/userModel'))
+const Code = require(path.join(__dirname, '../models/codeModel'))
 
 const validator = require('validator')
-const { v4: uuidv4 } = require("uuid")
+const { v4: uuidv4 } = require('uuid')
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
-const generateCode = require('../services/generateCode')
+const generateCode = require(path.join(__dirname, '../services/generateCode'))
 
 const register = async (req, res) => {
   const { name, email, password, confirmPassword } = req.body
@@ -19,22 +21,22 @@ const register = async (req, res) => {
   if (validator.isEmpty(name)) {
     return res.status(400).json({
       error: true,
-      message: "Name is required!"
+      message: 'Name is required!'
     })
   } else if (validator.isEmpty(email) || !validator.isEmail(email)) {
     return res.status(400).json({
       error: true,
-      message: "Valid email is required!"
+      message: 'Valid email is required!'
     })
   } else if (validator.isEmpty(password)) {
     return res.status(400).json({
       error: true,
-      message: "Password is required!"
+      message: 'Password is required!'
     })
   } else if (validator.isEmpty(confirmPassword)) {
     return res.status(400).json({
       error: true,
-      message: "Confirm password is required!"
+      message: 'Confirm password is required!'
     })
   }
 
@@ -44,7 +46,7 @@ const register = async (req, res) => {
     if (emailExist) {
       return res.status(400).json({
         error: true,
-        message: "Email already exists!"
+        message: 'Email already exists!'
       })
 
     } else {
@@ -53,11 +55,11 @@ const register = async (req, res) => {
       if (password !== confirmPassword) {
         return res.status(400).json({
           error: true,
-          message: "Password does not match!"
+          message: 'Password does not match!'
         })
 
       } else {
-        const user = new User(id, name, email, hashedPassword, "", "")
+        const user = new User(id, name, email, hashedPassword, '', '')
 
         await User.saveUser(user)
         await Code.saveCode(id)
@@ -74,7 +76,7 @@ const register = async (req, res) => {
 
         return res.status(201).json({
           error: false,
-          message: "Successfully create user!",
+          message: 'Successfully create user!',
           registerResult: {
             id: user.id,
             email: user.email,
@@ -87,7 +89,7 @@ const register = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to create user!"
+      message: 'Failed to create user!'
     })
   }
 }
@@ -98,12 +100,12 @@ const login = async (req, res) => {
   if (validator.isEmpty(email) || !validator.isEmail(email)) {
     return res.status(400).json({
       error: true,
-      message: "Valid email is required!"
+      message: 'Valid email is required!'
     })
   } else if (validator.isEmpty(password)) {
     return res.status(400).json({
       error: true,
-      message: "Password is required!"
+      message: 'Password is required!'
     })
   }
 
@@ -125,7 +127,7 @@ const login = async (req, res) => {
 
       return res.status(200).json({
         error: false,
-        message: "Successfully login!",
+        message: 'Successfully login!',
         loginResult: {
           id: user.id,
           email: user.email,
@@ -137,14 +139,14 @@ const login = async (req, res) => {
     } else {
       return res.status(401).json({
         error: true,
-        message: "Email or password is incorrect!"
+        message: 'Email or password is incorrect!'
       })
     }
 
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to login!"
+      message: 'Failed to login!'
     })
   }
 }
@@ -159,19 +161,19 @@ const profile = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         error: true,
-        message: "User not found!"
+        message: 'User not found!'
       })
 
     } else if (user.id != userId) {
       return res.status(401).json({
         error: true,
-        message: "You do not have permission to view this profile!"
+        message: 'You do not have permission to view this profile!'
       })
 
     } else {
       return res.status(200).json({
         error: false,
-        message: "Successfully get user!",
+        message: 'Successfully get user!',
         profileResult: {
           id: user.id,
           name: user.name,
@@ -183,7 +185,7 @@ const profile = async (req, res) => {
   } catch (error) {
     return res.status(404).json({
       error: true,
-      message: "User not found!"
+      message: 'User not found!'
     })
   }
 }
@@ -197,7 +199,7 @@ const update = async (req, res) => {
   if (validator.isEmpty(name)) {
     return res.status(400).json({
       error: true,
-      message: "Name is required!"
+      message: 'Name is required!'
     })
   }
 
@@ -206,18 +208,18 @@ const update = async (req, res) => {
     if (exist.id !== userId) {
       return res.status(401).json({
         error: true,
-        message: "You do not have permission to update this profile!"
+        message: 'You do not have permission to update this profile!'
       })
 
     } else {
-      const user = new User(id, name, "", "", "", "")
+      const user = new User(id, name, '', '', '', '')
       await User.updateUser(user)
 
       await admin.auth().updateUser(id, { displayName: name })
 
       return res.status(200).json({
         error: false,
-        message: "Successfully update user!",
+        message: 'Successfully update user!',
         updateResult: {
           id: exist.id,
           name: user.name,
@@ -229,7 +231,7 @@ const update = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to update user!"
+      message: 'Failed to update user!'
     })
   }
 }
@@ -241,17 +243,17 @@ const changePassword = async (req, res) => {
   if (validator.isEmpty(oldPassword)) {
     return res.status(400).json({
       error: true,
-      message: "Old password is required!"
+      message: 'Old password is required!'
     })
   } else if (validator.isEmpty(newPassword)) {
     return res.status(400).json({
       error: true,
-      message: "New password is required!"
+      message: 'New password is required!'
     })
   } else if (validator.isEmpty(confirmPassword)) {
     return res.status(400).json({
       error: true,
-      message: "Confirm password is required!"
+      message: 'Confirm password is required!'
     })
   }
 
@@ -262,7 +264,7 @@ const changePassword = async (req, res) => {
     if (!checkPassword) {
       return res.status(401).json({
         error: true,
-        message: "Old password is incorrect!"
+        message: 'Old password is incorrect!'
       })
 
     } else {
@@ -271,7 +273,7 @@ const changePassword = async (req, res) => {
       if (newPassword !== confirmPassword) {
         return res.status(400).json({
           error: true,
-          message: "New password and confirm password does not match!"
+          message: 'New password and confirm password does not match!'
         })
 
       } else {
@@ -280,7 +282,7 @@ const changePassword = async (req, res) => {
 
         return res.status(200).json({
           error: false,
-          message: "Successfully change password!"
+          message: 'Successfully change password!'
         })
       }
     }
@@ -288,7 +290,7 @@ const changePassword = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to change password!"
+      message: 'Failed to change password!'
     })
   }
 }
@@ -299,7 +301,7 @@ const sendResetPassword = async (req, res) => {
   if (validator.isEmpty(email) || !validator.isEmail(email)) {
     return res.status(400).json({
       error: true,
-      message: "Valid email is required!"
+      message: 'Valid email is required!'
     })
   }
 
@@ -308,7 +310,7 @@ const sendResetPassword = async (req, res) => {
     if (!user) {
       return res.status(400).json({
         error: true,
-        message: "Email is not registered!"
+        message: 'Email is not registered!'
       })
 
     } else {
@@ -324,14 +326,14 @@ const sendResetPassword = async (req, res) => {
 
       return res.status(200).json({
         error: false,
-        message: "Successfully send code!"
+        message: 'Successfully send code!'
       })
     }
 
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to send code!"
+      message: 'Failed to send code!'
     })
   }
 }
@@ -342,22 +344,22 @@ const resetPassword = async (req, res) => {
   if (validator.isEmpty(email) || !validator.isEmail(email)) {
     return res.status(400).json({
       error: true,
-      message: "Valid email is required!"
+      message: 'Valid email is required!'
     })
   } else if (validator.isEmpty(code)) {
     return res.status(400).json({
       error: true,
-      message: "Code is required!"
+      message: 'Code is required!'
     })
   } else if (validator.isEmpty(password)) {
     return res.status(400).json({
       error: true,
-      message: "Password is required!"
+      message: 'Password is required!'
     })
   } else if (validator.isEmpty(confirmPassword)) {
     return res.status(400).json({
       error: true,
-      message: "Confirm password is required!"
+      message: 'Confirm password is required!'
     })
   }
 
@@ -366,7 +368,7 @@ const resetPassword = async (req, res) => {
     if (!user) {
       return res.status(400).json({
         error: true,
-        message: "Email is not registered!"
+        message: 'Email is not registered!'
       })
 
     } else {
@@ -376,7 +378,7 @@ const resetPassword = async (req, res) => {
       if (data.used) {
         return res.status(400).json({
           error: true,
-          message: "Code has already been used! Please request a new code."
+          message: 'Code has already been used! Please request a new code.'
         })
       }
 
@@ -384,7 +386,7 @@ const resetPassword = async (req, res) => {
       if (!checkCode || data.exp < Date.now()) {
         return res.status(400).json({
           error: true,
-          message: "Invalid or expired Code!"
+          message: 'Invalid or expired Code!'
         })
 
       } else {
@@ -392,7 +394,7 @@ const resetPassword = async (req, res) => {
         if (password !== confirmPassword) {
           return res.status(400).json({
             error: true,
-            message: "Password and confirm password does not match!"
+            message: 'Password and confirm password does not match!'
           })
 
         } else {
@@ -412,7 +414,7 @@ const resetPassword = async (req, res) => {
 
           return res.status(200).json({
             error: false,
-            message: "Successfully reset password!"
+            message: 'Successfully reset password!'
           })
         }
       }
@@ -421,7 +423,7 @@ const resetPassword = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to reset password! Try again later."
+      message: 'Failed to reset password! Try again later.'
     })
   }
 }
@@ -433,7 +435,7 @@ const logout = async (req, res) => {
   if (!token) {
     return res.status(401).json({
       error: true,
-      message: "Cookies is not valid!"
+      message: 'Cookies is not valid!'
     })
   }
 
@@ -443,7 +445,7 @@ const logout = async (req, res) => {
     if (decoded.uid !== id) {
       return res.status(401).json({
         error: true,
-        message: "You cannot logout this user!"
+        message: 'You cannot logout this user!'
       })
 
     } else {
@@ -457,14 +459,14 @@ const logout = async (req, res) => {
 
       return res.status(200).json({
         error: false,
-        message: "Successfully logout!"
+        message: 'Successfully logout!'
       })
     }
 
   } catch (error) {
     return res.status(400).json({
       error: true,
-      message: "Failed to logout!"
+      message: 'Failed to logout!'
     })
   }
 }
@@ -476,7 +478,7 @@ const refreshToken = async (req, res) => {
   if (!token) {
     return res.status(401).json({
       error: true,
-      message: "Cookies is not valid!"
+      message: 'Cookies is not valid!'
     })
   }
 
@@ -486,7 +488,7 @@ const refreshToken = async (req, res) => {
     if (decoded.uid !== id) {
       return res.status(401).json({
         error: true,
-        message: "You cannot perform this action!" 
+        message: 'You cannot perform this action!' 
       })
     }
 
@@ -497,7 +499,7 @@ const refreshToken = async (req, res) => {
 
       return res.status(200).json({
         error: false,
-        message: "Token refreshed!",
+        message: 'Token refreshed!',
         token: refreshToken
       })
     }
@@ -505,7 +507,7 @@ const refreshToken = async (req, res) => {
   } catch (error) {
     return res.status(403).json({
       error: true,
-      message: "Something went wrong!"
+      message: 'Something went wrong!'
     })
   }
 }

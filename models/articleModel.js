@@ -1,4 +1,5 @@
-const { db } = require("../config/firebaseConfig")
+const path = require('path')
+const { db } = require(path.join(__dirname, '../config/firebaseConfig'))
 
 class Article {
   constructor(id, title, content, author, image, date) {
@@ -12,11 +13,11 @@ class Article {
 
   static saveArticle = async (article) => {
     const { id, title, content, author, image, date } = article
-    await db.collection("articles").doc(id).set({ title, content, author, image, date })
+    await db.collection('articles').doc(id).set({ title, content, author, image, date })
   }
 
   static findAll = async () => {
-    const snapshot = await db.collection("articles").orderBy("date", "desc").get()
+    const snapshot = await db.collection('articles').orderBy('date', 'desc').get()
 
     if (snapshot.empty) {
       return null
@@ -31,7 +32,7 @@ class Article {
   }
 
   static findById = async (id) => {
-    const doc = await db.collection("articles").doc(id).get()
+    const doc = await db.collection('articles').doc(id).get()
 
     if (!doc.exists) {
       return null
@@ -42,7 +43,7 @@ class Article {
   }
 
   static findByTitle = async (title) => {
-    const snapshot = await db.collection("articles").orderBy("title")
+    const snapshot = await db.collection('articles').orderBy('title')
       .startAt(title)
       .endAt(title + '\uf8ff')
       .get()
@@ -61,11 +62,11 @@ class Article {
 
   static updateArticle = async (article) => {
     const { id, title, content, author, image, date } = article
-    await db.collection("articles").doc(id).update({ title, content, author, image, date })
+    await db.collection('articles').doc(id).update({ title, content, author, image, date })
   }
 
   static deleteArticle = async (id) => {
-    await db.collection("articles").doc(id).delete()
+    await db.collection('articles').doc(id).delete()
   }
 }
 

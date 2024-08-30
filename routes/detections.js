@@ -1,8 +1,9 @@
-const express = require("express")
+const express = require('express')
+const path = require('path')
 const router = express.Router()
 
-const { create, getAll, getById, deleteById } = require('../controllers/detectionController')
-const verifyToken = require('../middleware/authMiddleware')
+const { create, getAll, getById, deleteById } = require(path.join(__dirname, '../controllers/detectionController'))
+const verifyToken = require(path.join(__dirname, '../middleware/authMiddleware'))
 
 router.get('/', verifyToken, getAll)
 router.post('/create', verifyToken, create)

@@ -1,4 +1,5 @@
-const { db } = require("../config/firebaseConfig")
+const path = require('path')
+const { db } = require(path.join(__dirname, '../config/firebaseConfig'))
 
 class Detection {
   constructor(id, imageUrl, model, userId, createdAt) {
@@ -11,11 +12,11 @@ class Detection {
 
   static saveDetection = async (detection) => {
     const { id, imageUrl, model, userId, createdAt } = detection
-    await db.collection("detections").doc(id).set({ imageUrl, model, userId, createdAt })
+    await db.collection('detections').doc(id).set({ imageUrl, model, userId, createdAt })
   }
 
   static findById = async (id, userId) => {
-    const doc = await db.collection("detections").doc(id).get()
+    const doc = await db.collection('detections').doc(id).get()
     const detection = doc.data()
 
     if (doc.exists && detection.userId == userId) {
@@ -26,7 +27,7 @@ class Detection {
   }
 
   static findAll = async (userId) => {
-    const snapshot = await db.collection("detections").where("userId", "==", userId).get()
+    const snapshot = await db.collection('detections').where('userId', '==', userId).get()
 
     if (snapshot.empty) {
       return null
@@ -46,7 +47,7 @@ class Detection {
   }
 
   static deleteDetection = async (id, userId) => {
-    const detection = db.collection("detections").doc(id)
+    const detection = db.collection('detections').doc(id)
     const doc = await detection.get()
 
     const data = doc.data()

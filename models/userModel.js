@@ -1,4 +1,5 @@
-const { db } = require("../config/firebaseConfig")
+const path = require('path')
+const { db } = require(path.join(__dirname, '../config/firebaseConfig'))
 
 class User {
   constructor(id, name, email, password, verified, token) {
@@ -12,11 +13,11 @@ class User {
 
   static saveUser = async (user) => {
     const { id, name, email, password} = user
-    await db.collection("users").doc(id).set({ name, email, password, verified: false, token: null })
+    await db.collection('users').doc(id).set({ name, email, password, verified: false, token: null })
   }
 
   static findById = async (id) => {
-    const doc = await db.collection("users").doc(id).get()
+    const doc = await db.collection('users').doc(id).get()
 
     if (doc.exists) {
       const data = doc.data()
@@ -27,7 +28,7 @@ class User {
   }
 
   static findByEmail = async (email) => {
-    const snapshot = await db.collection("users").where("email", "==", email).get()
+    const snapshot = await db.collection('users').where('email', '==', email).get()
 
     if (snapshot.empty) {
       return null
@@ -41,19 +42,19 @@ class User {
 
   static updateUser = async (user) => {
     const { id, name } = user
-    await db.collection("users").doc(id).update({ name })
+    await db.collection('users').doc(id).update({ name })
   }
 
   static changePassword = async (id, password) => {
-    await db.collection("users").doc(id).update({ password })
+    await db.collection('users').doc(id).update({ password })
   }
 
   static logoutUser = async (id) => {
-    await db.collection("users").doc(id).update({ token: null })
+    await db.collection('users').doc(id).update({ token: null })
   }
 
   static updateToken = async (id, token) => {
-    await db.collection("users").doc(id).update({ token })
+    await db.collection('users').doc(id).update({ token })
   }
 }
 

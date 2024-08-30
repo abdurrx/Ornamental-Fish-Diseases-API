@@ -1,17 +1,19 @@
 require('dotenv').config()
 
-const express = require("express")
+const express = require('express')
+const path = require("path")
+
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const cors = require("cors")
+const cors = require('cors')
 const PORT = 8080
 
-const users = require("./routes/users")
-const articles = require("./routes/articles")
-const detections = require("./routes/detections")
+const users = require(path.join(__dirname, './routes/users'))
+const articles = require(path.join(__dirname, './routes/articles'))
+const detections = require(path.join(__dirname, './routes/detections'))
 
 const app = express()
-app.use(express.static(__dirname))
+app.use(express.static(path.join(__dirname)))
 app.use(cors())
 app.use(express.json())
 
