@@ -430,14 +430,7 @@ const resetPassword = async (req, res) => {
 
 const logout = async (req, res) => {
   const { id } = req.params
-
   const token = req.cookies.jwt
-  if (!token) {
-    return res.status(401).json({
-      error: true,
-      message: 'Cookies is not valid!'
-    })
-  }
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY)
@@ -473,14 +466,7 @@ const logout = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   const { id } = req.params
-
   const token = req.cookies.jwt
-  if (!token) {
-    return res.status(401).json({
-      error: true,
-      message: 'Cookies is not valid!'
-    })
-  }
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY)

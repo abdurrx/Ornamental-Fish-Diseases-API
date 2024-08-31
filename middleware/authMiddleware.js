@@ -1,6 +1,7 @@
 const path = require('path')
 
 const jwt = require('jsonwebtoken')
+const { refreshToken } = require('firebase-admin/app')
 const { admin, db } = require(path.join(__dirname, '../config/firebaseConfig'))
 
 const verifyToken = async (req, res, next) => {
@@ -43,10 +44,22 @@ const verifyToken = async (req, res, next) => {
     next()
 
   } catch (error) {
-    return res.status(401).json({
-      error: true,
-      message: 'Token is not valid!'
-    })
+    const accessTokenError = jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY, (err) => err);
+    const refreshTokenError = jwt.verify(token, process.env.REFRESH_TOKEN_KEY, (err) => err);
+
+    if (accessTokenError) {
+      return res.status(401).json({
+        error: true,
+        message: 'Session is expired!'
+      })
+    }
+
+    if (refreshTokenError) {
+      return res.status(401).json({
+        error: true,
+        message: 'Session is not valid!'
+      })
+    }
   }
 }
 
