@@ -114,7 +114,7 @@ const login = async (req, res) => {
     const checkPassword =  await bcrypt.compare(password, user.password)
 
     if (checkPassword) {
-      const refreshToken = jwt.sign({ uid: user.id, email: user.email }, process.env.REFRESH_TOKEN_KEY, { expiresIn: '10m' })
+      const refreshToken = jwt.sign({ uid: user.id, email: user.email }, process.env.REFRESH_TOKEN_KEY, { expiresIn: '1h' })
       const accessToken = jwt.sign({ uid: user.id, email: user.email }, process.env.ACCESS_TOKEN_KEY, { expiresIn: '1d' })
       await User.updateToken(user.id, accessToken)
 
@@ -481,7 +481,7 @@ const refreshToken = async (req, res) => {
     const user = await User.findById(decoded.uid)
 
     if (user && user.token === token) {
-      const refreshToken = jwt.sign({ uid: user.id, email: user.email }, process.env.REFRESH_TOKEN_KEY, { expiresIn: '10m' })
+      const refreshToken = jwt.sign({ uid: user.id, email: user.email }, process.env.REFRESH_TOKEN_KEY, { expiresIn: '1h' })
 
       return res.status(200).json({
         error: false,

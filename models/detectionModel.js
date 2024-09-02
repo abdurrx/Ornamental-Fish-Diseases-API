@@ -27,7 +27,10 @@ class Detection {
   }
 
   static findAll = async (userId) => {
-    const snapshot = await db.collection('detections').where('userId', '==', userId).get()
+    const snapshot = await db.collection('detections')
+      .orderBy('createdAt', 'desc')
+      .where('userId', '==', userId)
+      .get()
 
     if (snapshot.empty) {
       return null
