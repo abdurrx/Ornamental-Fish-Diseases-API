@@ -26,7 +26,7 @@ def process_image(image_path, model_name):
     img_width, img_height = img.size
 
     # Predict using the model
-    results = model.predict(img, conf=0.75, iou=0.6)
+    results = model.predict(img, conf=0.75, iou=0.5)
 
     # Extract bounding boxes and confidence scores
     bboxes = results[0].boxes
