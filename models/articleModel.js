@@ -43,21 +43,22 @@ class Article {
   }
 
   static findByTitle = async (title) => {
-    const snapshot = await db.collection('articles').orderBy('title')
-      .startAt(title)
-      .endAt(title + '\uf8ff')
-      .get()
+    const snapshot = await db.collection('articles').orderBy('title').get()
 
     if (snapshot.empty) {
       return null
     }
 
-    const articles = snapshot.docs.map((doc) => {
-      const data = doc.data()
-      return new Article(doc.id, data.title, data.content, data.author, data.image, data.date)
-    })
+    const lowerCaseTitle = title.toLowerCase()
 
-    return articles.filter((article) => article !== null)
+    const articles = snapshot.docs
+      .map((doc) => {
+        const data = doc.data()
+        return new Article(doc.id, data.title, data.content, data.author, data.image, data.date)
+      })
+      .filter((article) => article.title.toLowerCase().includes(lowerCaseTitle))
+
+    return articles.length > 0 ? articles : null
   }
 
   static updateArticle = async (article) => {

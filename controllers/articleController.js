@@ -258,9 +258,10 @@ const deleteById = async (req, res) => {
 
 const search = async (req, res) => {
   const { title } = req.params
+  const lowerCaseTitle = title.toLowerCase()
 
   try {
-    const article = await Article.findByTitle(title)
+    const article = await Article.findByTitle(lowerCaseTitle)
 
     if (!article) {
       return res.status(404).json({
