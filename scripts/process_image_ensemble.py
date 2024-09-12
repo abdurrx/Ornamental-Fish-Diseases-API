@@ -23,19 +23,14 @@ def calculate_iou(box1, box2):
     return intersection / union if union > 0 else 0
 
 
-def is_overlapping(box, final_boxes, iou_threshold):
-    for fbox in final_boxes:
-        iou = calculate_iou(box, fbox)
-        if iou > iou_threshold:
-            return True
-    return False
-
-
 def non_max_suppression(boxes, iou_threshold=0.5):
+    boxes.sort(key=lambda x: x[4], reverse=True)
     final_boxes = []
+
     for box in boxes:
-        if not is_overlapping(box, final_boxes, iou_threshold):
+        if not any(calculate_iou(box[:4], fbox[:4]) > iou_threshold for fbox in final_boxes):
             final_boxes.append(box)
+
     return final_boxes
 
 
