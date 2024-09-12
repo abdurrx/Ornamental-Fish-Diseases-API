@@ -55,7 +55,10 @@ const create = async (req, res) => {
     const venvPythonPath = path.join(__dirname, '../venv/bin/python3');
 
     // Define other paths
-    const scriptPath = path.join(__dirname, '../scripts/process_image.py')
+    const scriptPath = (model_name === 'YOLOv9+RTDETR') ?
+      path.join(__dirname, '../scripts/process_image_ensemble.py') :
+      path.join(__dirname, '../scripts/process_image.py')
+
     const tempFilePath = path.join(__dirname, '../tmp', fileName)
     const outputFilePath = path.join(__dirname, '../tmp/output', fileName)
 

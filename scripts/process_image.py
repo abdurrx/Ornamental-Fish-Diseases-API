@@ -14,7 +14,7 @@ def process_image(image_path, model_name):
         model_path = os.path.join(base_dir, "models", "best_yolo.pt")
         model = YOLO(model_path)
 
-    elif model_name == "RTDETR-L":
+    elif model_name == "RTDETR":
         model_path = os.path.join(base_dir, "models", "best_rtdetr.pt")
         model = RTDETR(model_path)
 
