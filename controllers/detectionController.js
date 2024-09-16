@@ -82,7 +82,7 @@ const create = async (req, res) => {
         const processedFilePath = `${processedFolderName}/${fileName}`
         const processedFile = bucket.file(processedFilePath)
 
-        const originalFolderName = 'detections/original'
+        const originalFolderName = 'originals'
         const originalFilePath = `${originalFolderName}/${fileName}`
         const originalFile = bucket.file(originalFilePath)
 
@@ -185,7 +185,7 @@ const deleteById = async (req, res) => {
       const processedFileName = processedFilePath.split('/')[1]
       const processedFile = bucket.file(processedFilePath)
 
-      const originalFilePath = `detections/original/${processedFileName}`
+      const originalFilePath = `originals/${processedFileName}`
       const originalFile = bucket.file(originalFilePath)
 
       await Detection.deleteDetection(id, userId)
