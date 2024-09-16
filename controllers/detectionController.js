@@ -76,20 +76,29 @@ const create = async (req, res) => {
           })
         }
 
-        // Read the processed image
         const processedImageBuffer = fs.readFileSync(outputFilePath)
+        const processedFolderName = 'detections'
 
-        const folderName = 'detections'
-        const filePath = `${folderName}/${fileName}`
-        const file = bucket.file(filePath)
+        const processedFilePath = `${processedFolderName}/${fileName}`
+        const processedFile = bucket.file(processedFilePath)
+
+        const originalFolderName = 'detections/original'
+        const originalFilePath = `${originalFolderName}/${fileName}`
+        const originalFile = bucket.file(originalFilePath)
 
         try {
-          await file.save(processedImageBuffer, {
+          await processedFile.save(processedImageBuffer, {
             metadata: { contentType: image.mimetype },
           })
 
-          await file.makePublic()
-          const imageUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`
+          await originalFile.save(image.buffer, {
+            metadata: { contentType: image.mimetype }
+          })
+
+          await processedFile.makePublic()
+          await originalFile.makePublic()
+
+          const imageUrl = `https://storage.googleapis.com/${bucket.name}/${processedFile.name}`
 
           const detection = new Detection(id, imageUrl, model_name, userId, createdAt)
           await Detection.saveDetection(detection)
@@ -172,13 +181,17 @@ const deleteById = async (req, res) => {
         message: 'Detection not found!',
       })
     } else {
-      const oldFilePath = exist.imageUrl.split(
-        `https://storage.googleapis.com/${bucket.name}/`
-      )[1]
-      const oldFile = bucket.file(oldFilePath)
+      const processedFilePath = exist.imageUrl.split(`https://storage.googleapis.com/${bucket.name}/`)[1]
+      const processedFileName = processedFilePath.split('/')[1]
+      const processedFile = bucket.file(processedFilePath)
+
+      const originalFilePath = `detections/original/${processedFileName}`
+      const originalFile = bucket.file(originalFilePath)
 
       await Detection.deleteDetection(id, userId)
-      await oldFile.delete()
+
+      await processedFile.delete()
+      await originalFile.delete()
 
       return res.status(200).json({
         error: false,
