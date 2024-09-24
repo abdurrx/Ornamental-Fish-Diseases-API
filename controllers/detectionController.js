@@ -129,11 +129,13 @@ const getAll = async (req, res) => {
 
   try {
     const detections = await Detection.findAll(userId)
+
     return res.status(200).json({
       error: false,
       message: 'Successfully get detections!',
       detectionResults: detections,
     })
+
   } catch (error) {
     return res.status(404).json({
       error: true,
@@ -154,6 +156,7 @@ const getById = async (req, res) => {
         error: true,
         message: 'Detection not found!'
       })
+
     } else {
       return res.status(200).json({
         error: false,
@@ -161,6 +164,7 @@ const getById = async (req, res) => {
         detectionResult: detection,
       })
     }
+
   } catch (error) {
     return res.status(400).json({
       error: true,
@@ -180,24 +184,20 @@ const deleteById = async (req, res) => {
         error: true,
         message: 'Detection not found!',
       })
+
     } else {
       const processedFilePath = exist.imageUrl.split(`https://storage.googleapis.com/${bucket.name}/`)[1]
-      const processedFileName = processedFilePath.split('/')[1]
       const processedFile = bucket.file(processedFilePath)
 
-      const originalFilePath = `originals/${processedFileName}`
-      const originalFile = bucket.file(originalFilePath)
-
       await Detection.deleteDetection(id, userId)
-
       await processedFile.delete()
-      await originalFile.delete()
 
       return res.status(200).json({
         error: false,
         message: 'Successfully delete detection!'
       })
     }
+
   } catch (error) {
     return res.status(400).json({
       error: true,

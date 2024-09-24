@@ -68,7 +68,7 @@ def process_image(image_path, model_name):
 
         # Prepare label and confidence text
         text = f"{label}: {confidence:.2f}"
-        
+
         # Calculate text size using textbbox
         text_bbox = draw.textbbox((x1, y1), text, font=font)
         text_width = text_bbox[2] - text_bbox[0]
