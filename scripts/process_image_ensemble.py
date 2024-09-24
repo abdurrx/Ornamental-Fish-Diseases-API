@@ -56,7 +56,7 @@ def process_image_ensemble(image_path, model_name):
         raise ValueError("Invalid model name")
 
     # Open the image
-    img = Image.open(image_path).convert('RGB')
+    img = Image.open(image_path)
     img_width, img_height = img.size
 
     # Predict using YOLOv9
