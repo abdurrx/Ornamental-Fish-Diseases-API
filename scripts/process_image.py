@@ -22,7 +22,7 @@ def process_image(image_path, model_name):
         raise ValueError("Invalid model name")
 
     # Open the image
-    img = Image.open(image_path).convert('RGB')
+    img = Image.open(image_path)
     img_width, img_height = img.size
 
     # Predict using the model
@@ -50,7 +50,7 @@ def process_image(image_path, model_name):
     }
 
     # Iterate over all detected objects
-    for i, box in enumerate(bboxes):
+    for box in enumerate(bboxes):
         # Get coordinates and confidence score
         x1, y1, x2, y2 = box.xyxy[0].tolist()
 
