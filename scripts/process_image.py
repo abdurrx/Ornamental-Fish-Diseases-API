@@ -50,7 +50,7 @@ def process_image(image_path, model_name):
     }
 
     # Iterate over all detected objects
-    for box in enumerate(bboxes):
+    for i, box in enumerate(bboxes):
         # Get coordinates and confidence score
         x1, y1, x2, y2 = box.xyxy[0].tolist()
 
